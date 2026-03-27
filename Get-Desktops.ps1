@@ -1,9 +1,37 @@
+<#
+.SYNOPSIS
+Validates and maintains the Windows virtual desktop layout.
+
+.DESCRIPTION
+Imports the VirtualDesktop module, verifies that exactly four desktops exist,
+checks that each desktop has the expected name, and repairs the layout when
+needed. After validation, the script continues listening for desktop changes
+and sends SSH commands to a Raspberry Pi to control desk LED colors.
+
+.EXAMPLE
+PS> .\Get-Desktops.ps1
+
+Runs the desktop validation workflow and starts listening for desktop changes.
+
+.NOTES
+Requires the VirtualDesktop PowerShell module and SSH access to the configured
+Raspberry Pi host.
+#>
+
 Import-Module VirtualDesktop -DisableNameChecking
 
-#check to make sure the desktop count is right
+<#
+.SYNOPSIS
+Rebuilds the expected four-desktop layout.
 
+.DESCRIPTION
+Removes all existing desktops, recreates the four standard desktops, and sets
+their expected names and wallpapers.
+#>
+function Repair-Desktops {
+	[CmdletBinding()]
+	param()
 
-function Repair-Desktops {	
 	Remove-AllDesktops
 	Set-DesktopName (Get-CurrentDesktop) "Dev Env"
 	Set-DesktopWallpaper (Get-CurrentDesktop) "C:\Users\aaron\Pictures\Desktop Backgrounds\Sunset.jpg"
@@ -22,16 +50,33 @@ function Repair-Desktops {
 
 }
 
+<#
+.SYNOPSIS
+Validates the desktop layout and starts LED monitoring.
+
+.DESCRIPTION
+Checks that exactly four desktops exist. If the count is not four, the desktop
+layout is repaired immediately. When the count is correct, the desktop names
+are validated and the user is prompted to repair them if any expected name is
+missing. Once validation is complete, the function continues monitoring
+desktop changes and sends SSH commands to the Raspberry Pi LED controller.
+#>
 function Get-Desktops {
-	[CmdletBinding()]  
-	$answer = $null 
+	[CmdletBinding()]
+	param()
+
+	$answer = $null
 	$dt_count = Get-DesktopCount
-	if ($dt_count -eq 4) { #make sure there's 4 desktops total
-		$dt_count = Get-DesktopCount
+
+	if ($dt_count -ne 4) {
+		Write-Host "Expected 4 desktops but found $dt_count. Repairing desktops now..."
+		Repair-Desktops
+	} else {
 		$dt1_name = Get-DesktopName 0
 		$dt2_name = Get-DesktopName 1
 		$dt3_name = Get-DesktopName 2
 		$dt4_name = Get-DesktopName 3
+
 		if ($dt1_name -ne "Dev Env") { #and that the names of the desktops are what they should be also
 			$answer = Read-Host -Prompt "There's a problem with your desktops. Would you like to fix them now? (y/n)"
 		} elseif ($dt2_name -ne "Wiki Work") {
@@ -40,10 +85,9 @@ function Get-Desktops {
 			$answer = Read-Host -Prompt "There's a problem with your desktops. Would you like to fix them now? (y/n)"
 		} elseif ($dt4_name -ne "Calls and Edu") {
 			$answer = Read-Host -Prompt "There's a problem with your desktops. Would you like to fix them now? (y/n)"
+		} else {
+			Write-Host "The desktop configuration appears to be correct."
 		}
-		Write-Host "The desktop configuration appears to be correct."
-	} else {
-		$answer = Read-Host -Prompt "There's a problem with your desktops. Would you like to fix them now? (y/n)"
 	}
 
 	if ($answer -eq "y") {
@@ -67,4 +111,8 @@ function Get-Desktops {
 			$last_id = $current
 		}
 	}
+}
+
+if ($MyInvocation.InvocationName -ne '.') {
+	Get-Desktops
 }
