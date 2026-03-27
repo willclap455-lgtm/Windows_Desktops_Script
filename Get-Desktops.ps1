@@ -34,19 +34,19 @@ function Repair-Desktops {
 
 	Remove-AllDesktops
 	Set-DesktopName (Get-CurrentDesktop) "Dev Env"
-	Set-DesktopWallpaper (Get-CurrentDesktop) "C:\Users\aaron\Pictures\Desktop Backgrounds\Sunset.jpg"
+	Set-DesktopWallpaper (Get-CurrentDesktop) "C:\Users\Aaron.CLANCY\Pictures\Desktop Backgrounds\Sunset.jpg"
 
 	Switch-Desktop (New-Desktop)
 	Set-DesktopName (Get-CurrentDesktop) "Wiki Work"
-	Set-DesktopWallpaper (Get-CurrentDesktop) "C:\Users\aaron\Pictures\Desktop Backgrounds\River.jpg"
+	Set-DesktopWallpaper (Get-CurrentDesktop) "C:\Users\Aaron.CLANCY\Pictures\Desktop Backgrounds\River.jpg"
 
 	Switch-Desktop (New-Desktop)
 	Set-DesktopName (Get-CurrentDesktop) "FoxPro and Tasks"
-	Set-DesktopWallpaper (Get-CurrentDesktop) "C:\Users\aaron\Pictures\Desktop Backgrounds\Oregon.jpg"
+	Set-DesktopWallpaper (Get-CurrentDesktop) "C:\Users\Aaron.CLANCY\Pictures\Desktop Backgrounds\Oregon.jpg"
 
 	Switch-Desktop (New-Desktop)
 	Set-DesktopName (Get-CurrentDesktop) "Calls and Edu"
-	Set-DesktopWallpaper (Get-CurrentDesktop) "C:\Users\aaron\Pictures\Desktop Backgrounds\Safari.jpg"
+	Set-DesktopWallpaper (Get-CurrentDesktop) "C:\Users\Aaron.CLANCY\Pictures\Desktop Backgrounds\Safari.jpg"
 
 }
 
